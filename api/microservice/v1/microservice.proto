@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package microservice.v1;
+
+option go_package = "github.com/gRPC_test/golang-grpc/pkg/microservice/v1";
+
+// Импортируем annotations.proto который необходим, чтобы описать rpc в rest нотации,
+// для того, чтобы в дальнейшем можно было создать rest на основе rpc
+import "google/api/annotations.proto";
+
+// В файле example.proto мы создали пользовательские message ExampleRequest и ExampleResponse.
+// Существуют подобные структуры которые Google описал за нас, ниже можно увидеть импорт
+// часто используемых protobuf нотаций.
+
+// empty.proto используется если необходимо получить или вернуть ни чего, например:
+// rpc Example(google.protobuf.Empty) returns (google.protobuf.Empty)
+// import "google/protobuf/empty.proto";
+
+// timestamp.proto описывает тип данных, связанный с временем
+// google.protobuf.Timestamp
+// import "google/protobuf/timestamp.proto";
+
+// Импортируем наш пользовательский message, созданный выше
+import "microservice/v1/example.proto";
+
+// Описываем наш api сервис
+service Microservice {
+    // Создаем "ручку", которая принимает данные описанные в ExampleRequest
+    // и возвращает данные описанные в ExampleResponse
+    rpc Example(ExampleRequest) returns (ExampleResponse) {
+        // Это описание для Rest API, которое доступно благодаря annotations.proto
+        option (google.api.http) = {
+            // Ожидается POST запрос по адресу /example
+            post: "/v1/example"
+            // Тело запроса, может быть любым
+            body: "*"
+        };
+    }
+}
